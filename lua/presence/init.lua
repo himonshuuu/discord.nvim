@@ -57,6 +57,10 @@ function PresenceManager.statusline()
     end
 end
 
+function PresenceManager:setup(options)
+    return require("presence.internal.manager").setup(self, options)
+end
+
 if vim.api and vim.api.nvim_create_user_command then
     vim.api.nvim_create_user_command("PresenceDeactivate", function()
         PresenceManager:deactivate()
