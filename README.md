@@ -113,3 +113,32 @@ let g:presence_line_number_text    = "Line %s out of %s"
 Pull requests are very welcome, feel free to open an issue to work on any of the open [todo items](https://github.com/andweeb/presence.nvim/projects/1?add_cards_query=is%3Aopen) or message [droob#1322](https://discordapp.com/users/241953146232897550) on Discord!
 
 Asset additions and changes are also welcome! Supported file types can be found in [`file_assets.lua`](lua/presence/file_assets.lua) and their referenced asset files can be found [in this folder](https://www.dropbox.com/sh/j8913f0gav3toeh/AADxjn0NuTprGFtv3Il1Pqz-a?dl=0).
+
+## Architecture Overview
+
+Presence.nvim is organized into modular Lua components for maintainability and extensibility:
+
+- **lua/presence/init.lua**: Main entry point, sets up and exposes the plugin API.
+- **lua/presence/internal/**: Core logic modules:
+  - `manager.lua`: Orchestrates Discord presence, options, and state.
+  - `event_handlers.lua`: Handles Neovim events and triggers presence updates.
+  - `peer_manager.lua`: Manages multi-instance/peer synchronization.
+  - `discord_client.lua`: Handles Discord IPC/RPC and activity updates.
+  - `helpers.lua`: General utility functions.
+  - `workspace_utils.lua`: Project and file path utilities.
+- **lua/presence/assets.lua**: Loads file asset metadata for Discord icons.
+- **lua/presence/file_explorers.lua**: Maps file explorer buffer/filetypes.
+- **lua/presence/plugin_managers.lua**: Maps plugin manager names.
+- **lua/lib/log.lua**: Logging utility for debug/info/warn/error output.
+- **autoload/presence.vim**: VimL autocommands for event integration.
+- **plugin/presence.vim**: VimL plugin loader for default setup.
+- **lua/presence/deps/**: Bundled Lua dependencies (msgpack, serpent, struct).
+
+### Extending/Contributing
+
+- Add new event handlers in `event_handlers.lua`.
+- Add new status text options in `manager.lua` setup.
+- Add new filetype or asset mappings in `file_explorers.lua` or `assets.json`.
+- For advanced logging, extend `lib/log.lua`.
+
+See inline comments in each module for more details.

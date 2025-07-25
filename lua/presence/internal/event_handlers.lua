@@ -17,13 +17,17 @@ local EventHandlers = {}
 --- @class Logger
 --- @field debug function
 
+local function is_quickfix()
+    return vim.bo.filetype == "qf"
+end
+
 function EventHandlers.handle_focus_gained(self, ...)
     self.log:debug("Handling FocusGained event...")
     if next(self.last_activity) == nil and os.getenv("TMUX") then
         self.log:debug("Skipping presence update for FocusGained event triggered by tmux...")
         return
     end
-    if vim.bo.filetype == "qf" then
+    if is_quickfix() then
         self.log:debug("Skipping presence update for quickfix window...")
         return
     end
@@ -44,7 +48,7 @@ end
 function EventHandlers.handle_win_enter(self, ...)
     self.log:debug("Handling WinEnter event...")
     vim.schedule(function()
-        if vim.bo.filetype == "qf" then
+        if is_quickfix() then
             self.log:debug("Skipping presence update for quickfix window...")
             return
         end
@@ -56,7 +60,7 @@ function EventHandlers.handle_win_leave(self, ...)
     self.log:debug("Handling WinLeave event...")
     local current_window = vim.api.nvim_get_current_win()
     vim.schedule(function()
-        if vim.bo.filetype == "qf" then
+        if is_quickfix() then
             self.log:debug("Not canceling presence due to switching to quickfix window...")
             return
         end
@@ -71,7 +75,7 @@ end
 
 function EventHandlers.handle_buf_enter(self, ...)
     self.log:debug("Handling BufEnter event...")
-    if vim.bo.filetype == "qf" then
+    if is_quickfix() then
         self.log:debug("Skipping presence update for quickfix window...")
         return
     end
@@ -81,7 +85,7 @@ end
 function EventHandlers.handle_buf_add(self, ...)
     self.log:debug("Handling BufAdd event...")
     vim.schedule(function()
-        if vim.bo.filetype == "qf" then
+        if is_quickfix() then
             self.log:debug("Skipping presence update for quickfix window...")
             return
         end

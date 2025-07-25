@@ -3,9 +3,17 @@
 
 ---@diagnostic disable: undefined-global
 
-local struct = require("deps.struct")
-local msgpack = require("deps.msgpack")
-local serpent = require("deps.serpent")
+local ok_struct, struct = pcall(require, "deps.struct")
+local ok_msgpack, msgpack = pcall(require, "deps.msgpack")
+local ok_serpent, serpent = pcall(require, "deps.serpent")
+if not (ok_struct and ok_msgpack and ok_serpent) then
+    vim.schedule(function()
+        vim.notify(
+        "[presence.nvim] Warning: Missing required dependencies (struct, msgpack, or serpent). Discord integration will not work.",
+            vim.log.levels.ERROR)
+    end)
+    return {}
+end
 
 local DiscordClient = {}
 

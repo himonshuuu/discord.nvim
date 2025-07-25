@@ -156,13 +156,14 @@ function PresenceManager:setup(options)
     self:set_option("git_commit_text", "Committing changes")
     self:set_option("plugin_manager_text", "Managing plugins")
     self:set_option("reading_text", "Reading %s")
+    self:set_option("viewing_text", "Viewing %s")
     self:set_option("workspace_text", "Working on %s")
     self:set_option("line_number_text", "Line %s out of %s")
     self:set_option("idling_text", "Idling...")
     self:set_option("blacklist", {})
     self:set_option("buttons", true)
     self:set_option("file_assets", {})
-    self:set_option("log_level", "debug", false)
+    self:set_option("log_level", nil, false)
     for name, asset in pairs(default_file_assets) do
         if not self.options.file_assets[name] then
             self.options.file_assets[name] = asset
@@ -329,13 +330,17 @@ function PresenceManager:update(buffer, should_debounce)
         self.os.path_separator, self.log)
 
     -- Determine status text based on file type
-    local status_text = "Editing"
+    local status_text = self.options.editing_text or "Editing %s"
+    local filename_display = filename or "unnamed buffer"
     if vim.bo.filetype == "gitcommit" then
-        status_text = "Committing changes"
+        status_text = self.options.git_commit_text or "Committing changes"
     elseif vim.bo.filetype == "netrw" or vim.bo.filetype == "nerdtree" then
-        status_text = "Browsing files"
+        status_text = self.options.file_explorer_text or "Browsing %s"
     elseif not vim.bo.modifiable or vim.bo.readonly then
-        status_text = "Reading"
+        status_text = self.options.viewing_text or "Viewing %s"
+    end
+    if status_text:find("%%s") then
+        status_text = string.format(status_text, filename_display)
     end
 
     -- Get file icon/asset
@@ -353,13 +358,14 @@ function PresenceManager:update(buffer, should_debounce)
 
     -- Create activity data
     local activity = {
-        state = string.format("%s %s", status_text, filename or "unnamed buffer"),
-        details = project_name and string.format("Working on %s", project_name) or "Working on a project",
+        state = status_text,
+        details = project_name and string.format(self.options.workspace_text or "Working on %s", project_name) or
+            "Working on a project",
         assets = {
             large_image = asset_key,
-            large_text = filename or "unnamed buffer",
-            small_image = "neovim",
-            small_text = "Neovim",
+            large_text = filename_display,
+            small_image = self.options.main_image or "neovim",
+            small_text = self.options.neovim_image_text or "Neovim",
         },
         timestamps = {
             start = os.time(),
