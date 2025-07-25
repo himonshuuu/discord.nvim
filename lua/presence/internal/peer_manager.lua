@@ -30,7 +30,7 @@ function PeerManager.register_peer(self, id, socket)
         socket = socket,
         workspace = nil,
     }
-    self.log:info(string.format("Registered peer %s", id))
+    self.log:debug(string.format("Registered peer %s", id))
 end
 
 function PeerManager.unregister_peer(self, id, peer)
@@ -56,7 +56,7 @@ function PeerManager.unregister_peer(self, id, peer)
         end
         self.workspaces = workspaces
     end
-    self.log:info(string.format("Unregistered peer %s", id))
+    self.log:debug(string.format("Unregistered peer %s", id))
 end
 
 function PeerManager.unregister_peer_and_set_activity(self, id, peer)
@@ -123,7 +123,7 @@ function PeerManager.sync_self(self, data)
     for key, value in pairs(data) do
         self[key] = value
     end
-    self.log:info("Synced runtime data from remote peer")
+    self.log:debug("Synced runtime data from remote peer")
 end
 
 function PeerManager.sync_self_activity(self)

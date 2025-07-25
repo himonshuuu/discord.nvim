@@ -26,7 +26,7 @@ function WorkspaceUtils.get_project_name(file_path, os_name, path_separator, log
     local project_path = vim.fn.system(project_path_cmd)
     project_path = vim.trim(project_path)
     if project_path:find("fatal.*") then
-        if log then log:info("Not a git repository, skipping...") end
+        if log then log:debug("Not a git repository, skipping...") end
         return nil
     end
     if vim.v.shell_error ~= 0 or #project_path == 0 then

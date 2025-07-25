@@ -93,7 +93,7 @@ function DiscordClient:call(opcode, payload, on_response)
                                 self.log:error("Reconnect failed: " .. tostring(connect_err))
                                 on_response(err_message)
                             else
-                                self.log:info("Reconnected to Discord, retrying activity update...")
+                                self.log:debug("Reconnected to Discord, retrying activity update...")
                                 -- Retry the original call
                                 self:call(opcode, payload, on_response)
                             end

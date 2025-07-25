@@ -152,7 +152,7 @@ function PresenceManager:setup(options)
         self.log:error(string.format("Unable to detect operating system: %s", vim.inspect(vim.loop.os_uname())))
     end
     if options.client_id then
-        self.log:info("Using user-defined Discord client id")
+        self.log:debug("Using user-defined Discord client id")
     end
     self:set_option("auto_update", 1)
     self:set_option("client_id", "1173975703046340789")
@@ -213,7 +213,7 @@ function PresenceManager:setup(options)
 
     vim.api.nvim_set_var("presence_auto_update", options.auto_update)
     vim.fn["presence#SetAutoCmds"]()
-    self.log:info("Completed plugin setup")
+    self.log:debug("Completed plugin setup")
     vim.api.nvim_set_var("presence_has_setup", 1)
     return self
 end
@@ -226,7 +226,7 @@ function PresenceManager:deactivate()
     end
     if self.discord and self.discord.disconnect then
         self.discord:disconnect(function()
-            self.log:info("Disconnected from Discord (deactivate)")
+            self.log:debug("Disconnected from Discord (deactivate)")
         end)
     end
     if self.unregister_self then
@@ -237,7 +237,7 @@ function PresenceManager:deactivate()
     end
     pcall(vim.api.nvim_del_var, "presence_has_setup")
     pcall(vim.api.nvim_del_var, "presence_auto_update")
-    self.log:info("Presence.nvim deactivated.")
+    self.log:debug("Presence.nvim deactivated.")
 end
 
 --- Get the current status of the plugin.
@@ -257,7 +257,7 @@ end
 
 --- Reconnect to Discord manually.
 function PresenceManager:reconnect()
-    self.log:info("Manually reconnecting to Discord...")
+    self.log:debug("Manually reconnecting to Discord...")
     self:connect_to_discord()
 end
 
@@ -300,20 +300,20 @@ function PresenceManager:authorize_discord()
         return
     end
 
-    self.log:info("Authorizing with Discord...")
+    self.log:debug("Authorizing with Discord...")
     self.is_authorizing = true
 
     self.discord:authorize(function(err, response)
         self.is_authorizing = false
 
         if err and err:find(".*already did handshake.*") then
-            self.log:info("Already authorized with Discord")
+            self.log:debug("Already authorized with Discord")
             self.is_authorized = true
         elseif err then
             self.log:error("Failed to authorize with Discord: " .. err)
             self.is_authorized = false
         else
-            self.log:info(string.format("Authorized with Discord for %s", response.data.user.username))
+            self.log:debug(string.format("Authorized with Discord for %s", response.data.user.username))
             self.is_authorized = true
         end
     end)
