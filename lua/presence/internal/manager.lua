@@ -31,6 +31,15 @@ PresenceManager.socket = vim.v.servername
 PresenceManager.workspace = nil
 PresenceManager.workspaces = {}
 
+-- Prevent double setup (module guard)
+if vim.g.presence_has_setup then
+    if vim.notify then
+        vim.notify("[presence.nvim] PresenceManager already initialized, skipping duplicate setup.", vim.log.levels.WARN)
+    end
+    return PresenceManager or {}
+end
+vim.g.presence_has_setup = true
+
 --- Set an option, with validation and fallback to global or default.
 --- @param option string
 --- @param default any
