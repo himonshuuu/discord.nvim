@@ -9,7 +9,7 @@ local ok_serpent, serpent = pcall(require, "deps.serpent")
 if not (ok_struct and ok_msgpack and ok_serpent) then
     vim.schedule(function()
         vim.notify(
-        "[presence.nvim] Warning: Missing required dependencies (struct, msgpack, or serpent). Discord integration will not work.",
+            "[presence.nvim] Warning: Missing required dependencies (struct, msgpack, or serpent). Discord integration will not work.",
             vim.log.levels.ERROR)
     end)
     return {}
@@ -78,7 +78,30 @@ function DiscordClient:call(opcode, payload, on_response)
             if err then
                 local err_format = "Pipe write error - %s"
                 local err_message = string.format(err_format, err)
-                on_response(err_message)
+                if tostring(err):find("EPIPE") then
+                    self.log:error("[presence.nvim] Pipe broken (EPIPE), attempting to reconnect...")
+                    -- Only retry once per call to avoid infinite loops
+                    if payload._has_retried then
+                        self.log:error("[presence.nvim] Already retried after EPIPE, aborting.")
+                        on_response(err_message)
+                        return
+                    end
+                    payload._has_retried = true
+                    self:disconnect(function()
+                        self:connect(function(connect_err)
+                            if connect_err then
+                                self.log:error("Reconnect failed: " .. tostring(connect_err))
+                                on_response(err_message)
+                            else
+                                self.log:info("Reconnected to Discord, retrying activity update...")
+                                -- Retry the original call
+                                self:call(opcode, payload, on_response)
+                            end
+                        end)
+                    end)
+                else
+                    on_response(err_message)
+                end
             else
                 self.log:debug("Wrote message to pipe")
             end

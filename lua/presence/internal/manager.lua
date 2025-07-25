@@ -32,12 +32,14 @@ PresenceManager.workspace = nil
 PresenceManager.workspaces = {}
 
 -- Prevent double setup (module guard)
-if vim.g.presence_has_setup then
+local _already_setup = false
+if _already_setup or vim.g.presence_has_setup then
     if vim.notify then
         vim.notify("[presence.nvim] PresenceManager already initialized, skipping duplicate setup.", vim.log.levels.WARN)
     end
     return PresenceManager or {}
 end
+_already_setup = true
 vim.g.presence_has_setup = true
 
 --- Set an option, with validation and fallback to global or default.
@@ -393,7 +395,7 @@ function PresenceManager:update(buffer, should_debounce)
             if err then
                 self.log:error(string.format("Failed to set activity in Discord: %s", err))
             else
-                self.log:info("Updated Discord presence")
+                self.log:debug("Updated Discord presence")
             end
         end)
     end
@@ -411,7 +413,7 @@ function PresenceManager:cancel()
             if err then
                 self.log:error(string.format("Failed to cancel activity in Discord: %s", err))
             else
-                self.log:info("Canceled Discord presence")
+                self.log:debug("Canceled Discord presence")
             end
         end)
     end
@@ -426,7 +428,7 @@ function PresenceManager:unregister_self()
 
     if self.peer_manager.unregister_self then
         self.peer_manager.unregister_self(self)
-        self.log:info("Unregistered self from all peers")
+        self.log:debug("Unregistered self from all peers")
     end
 end
 
