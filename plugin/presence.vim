@@ -1,8 +1,10 @@
-" Fallback to setting up the plugin automatically
-if !exists("g:presence_has_setup")
-lua << EOF
-    local Presence = require("presence")
-    Presence:setup()
-    Presence.log:debug("Custom setup not detected, using defaults")
-EOF
+if exists('g:loaded_presence_nvim')
+  finish
 endif
+let g:loaded_presence_nvim = 1
+
+lua << EOF
+require('presence').setup()
+EOF
+
+
