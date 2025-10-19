@@ -9,7 +9,7 @@ function M.ensure_started(config)
   daemon.ensure_started(config, function(success, err)
     if not success and err then
       vim.schedule(function()
-        vim.notify("presence.nvim: " .. err, vim.log.levels.ERROR)
+        vim.notify("discord.nvim: " .. err, vim.log.levels.ERROR)
       end)
     end
   end)

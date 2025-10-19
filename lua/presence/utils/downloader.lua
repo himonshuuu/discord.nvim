@@ -43,9 +43,9 @@ function M.download_binary()
   
   vim.fn.mkdir(plugin_root .. "/bin", "p")
   
-  local url = "https://github.com/himonshuuu/presence.nvim/releases/latest/download/" .. bin_name
+  local url = "https://github.com/himonshuuu/discord.nvim/releases/latest/download/" .. bin_name
   
-  vim.notify("presence.nvim: Downloading binary from GitHub releases...", vim.log.levels.INFO)
+  vim.notify("discord.nvim: Downloading binary from GitHub releases...", vim.log.levels.INFO)
   
   local handle = uv.spawn("curl", {
     args = { "-L", "-o", bin_path, url },
@@ -55,17 +55,17 @@ function M.download_binary()
       uv.fs_chmod(bin_path, tonumber("755", 8), function(err)
         if err then
           vim.schedule(function()
-            vim.notify("presence.nvim: Failed to make binary executable: " .. err, vim.log.levels.ERROR)
+            vim.notify("discord.nvim: Failed to make binary executable: " .. err, vim.log.levels.ERROR)
           end)
         else
           vim.schedule(function()
-            vim.notify("presence.nvim: Binary downloaded successfully!", vim.log.levels.INFO)
+            vim.notify("discord.nvim: Binary downloaded successfully!", vim.log.levels.INFO)
           end)
         end
       end)
     else
       vim.schedule(function()
-        vim.notify("presence.nvim: Failed to download binary. Falling back to local build.", vim.log.levels.WARN)
+        vim.notify("discord.nvim: Failed to download binary. Falling back to local build.", vim.log.levels.WARN)
         M.build_binary_locally()
       end)
     end
@@ -82,11 +82,11 @@ function M.build_binary_locally()
   }, function(build_code)
     if build_code == 0 then
       vim.schedule(function()
-        vim.notify("presence.nvim: Built binary locally successfully!", vim.log.levels.INFO)
+        vim.notify("discord.nvim: Built binary locally successfully!", vim.log.levels.INFO)
       end)
     else
       vim.schedule(function()
-        vim.notify("presence.nvim: Failed to build binary locally. Please install Go and run 'make build'.", vim.log.levels.ERROR)
+        vim.notify("discord.nvim: Failed to build binary locally. Please install Go and run 'make build'.", vim.log.levels.ERROR)
       end)
     end
   end)

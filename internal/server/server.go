@@ -7,11 +7,11 @@ import (
 	"sync"
 	"sync/atomic"
 
-	"github.com/himonshuuu/presence.nvim/daemon/internal/config"
-	"github.com/himonshuuu/presence.nvim/daemon/internal/handler"
-	"github.com/himonshuuu/presence.nvim/daemon/internal/logger"
-	"github.com/himonshuuu/presence.nvim/daemon/internal/presence"
-	"github.com/himonshuuu/presence.nvim/daemon/internal/protocol"
+	"github.com/himonshuuu/discord.nvim/daemon/internal/config"
+	"github.com/himonshuuu/discord.nvim/daemon/internal/handler"
+	"github.com/himonshuuu/discord.nvim/daemon/internal/logger"
+	"github.com/himonshuuu/discord.nvim/daemon/internal/presence"
+	"github.com/himonshuuu/discord.nvim/daemon/internal/protocol"
 )
 
 type Server struct {

@@ -74,7 +74,7 @@ function M.ensure_started(config, on_ready)
               if on_ready then on_ready(true) end
             else
               vim.schedule(function()
-                vim.notify("presence.nvim: failed to connect to daemon: " .. (err2 or "unknown error"), vim.log.levels.ERROR)
+                vim.notify("discord.nvim: failed to connect to daemon: " .. (err2 or "unknown error"), vim.log.levels.ERROR)
               end)
               if on_ready then on_ready(false, err2) end
             end
@@ -82,7 +82,7 @@ function M.ensure_started(config, on_ready)
         end)
       else
         vim.schedule(function()
-          vim.notify("presence.nvim: failed to start daemon", vim.log.levels.ERROR)
+          vim.notify("discord.nvim: failed to start daemon", vim.log.levels.ERROR)
         end)
         if on_ready then on_ready(false, "Failed to start daemon") end
       end

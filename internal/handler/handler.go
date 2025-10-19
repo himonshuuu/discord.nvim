@@ -3,8 +3,8 @@ package handler
 import (
 	"encoding/json"
 
-	"github.com/himonshuuu/presence.nvim/daemon/internal/presence"
-	"github.com/himonshuuu/presence.nvim/daemon/internal/protocol"
+	"github.com/himonshuuu/discord.nvim/daemon/internal/presence"
+	"github.com/himonshuuu/discord.nvim/daemon/internal/protocol"
 )
 
 type Handler struct {

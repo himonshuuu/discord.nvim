@@ -1,4 +1,4 @@
-# presence.nvim
+# discord.nvim
 
 Event-driven Discord Rich Presence for Neovim with idle, viewing, and editing states.
 
@@ -17,26 +17,26 @@ Event-driven Discord Rich Presence for Neovim with idle, viewing, and editing st
 **With lazy.nvim:**
 ```lua
 {
-  'himonshuuu/presence.nvim',
+  'himonshuuu/discord.nvim',
   -- No build step needed - binary downloads automatically!
 }
 ```
 
 **With packer.nvim:**
 ```lua
-use 'himonshuuu/presence.nvim'
+use 'himonshuuu/discord.nvim'
 ```
 
 **With vim-plug:**
 ```vim
-Plug 'himonshuuu/presence.nvim'
+Plug 'himonshuuu/discord.nvim'
 ```
 
 ### Manual Installation
 
 ```bash
 # Clone the repository
-git clone https://github.com/himonshuuu/presence.nvim.git ~/.local/share/nvim/site/pack/packer/start/presence.nvim
+git clone https://github.com/himonshuuu/discord.nvim.git ~/.local/share/nvim/site/pack/packer/start/discord.nvim
 
 # Binary will be downloaded automatically on first use
 ```
@@ -104,7 +104,7 @@ nvim file2.txt &
 If automatic binary download fails:
 
 1. **Check Internet Connection**: Ensure you have internet access
-2. **Manual Download**: Download the binary manually from [GitHub Releases](https://github.com/himonshuuu/presence.nvim/releases)
+2. **Manual Download**: Download the binary manually from [GitHub Releases](https://github.com/himonshuuu/discord.nvim/releases)
 3. **Build from Source**: Install Go and run `make build`
 
 ### Discord Not Showing Presence

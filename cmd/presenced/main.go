@@ -6,8 +6,8 @@ import (
 	"os/signal"
 	"syscall"
 
-	"github.com/himonshuuu/presence.nvim/daemon/internal/presence"
-	"github.com/himonshuuu/presence.nvim/daemon/internal/server"
+	"github.com/himonshuuu/discord.nvim/daemon/internal/presence"
+	"github.com/himonshuuu/discord.nvim/daemon/internal/server"
 )
 
 func main() {

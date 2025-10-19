@@ -1,4 +1,4 @@
-module github.com/himonshuuu/presence.nvim/daemon
+module github.com/himonshuuu/discord.nvim/daemon
 
 go 1.25
 
