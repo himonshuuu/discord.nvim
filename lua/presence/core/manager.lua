@@ -10,8 +10,7 @@ local proc = nil
 function M.start_daemon()
   local bin_path = binary.get_binary_path()
   proc = uv.spawn(bin_path, { 
-    args = {}, 
-    cwd = vim.fn.getcwd() 
+    args = {}
   }, function()
     proc = nil
   end)
