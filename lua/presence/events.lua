@@ -33,19 +33,24 @@ local function schedule_idle()
   end)
 end
 
+local function cancel_idle_timer()
+  local t = ensure_timer()
+  t:stop()
+end
+
 function M.register_autocmds()
   local aug = vim.api.nvim_create_augroup("presence_nvim", { clear = true })
   vim.api.nvim_create_autocmd({ "BufEnter", "WinEnter" }, {
     group = aug,
     callback = function()
-      schedule_idle()
+      cancel_idle_timer()
       M.update_presence("viewing")
     end,
   })
   vim.api.nvim_create_autocmd({ "InsertEnter" }, {
     group = aug,
     callback = function()
-      schedule_idle()
+      cancel_idle_timer()
       M.update_presence("editing")
     end,
   })
@@ -58,7 +63,7 @@ function M.register_autocmds()
   vim.api.nvim_create_autocmd({ "CursorMoved", "CursorMovedI" }, {
     group = aug,
     callback = function()
-      schedule_idle()
+      cancel_idle_timer()
       M.refresh_presence()
     end,
   })

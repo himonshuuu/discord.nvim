@@ -34,9 +34,7 @@ function M.ensure_started(config, on_ready)
     return 
   end
   
-  -- Ensure binary exists
   if not binary.ensure_binary_exists() then
-    -- Wait a bit for download to complete, then try again
     uv.new_timer():start(2000, 0, function()
       M.ensure_started(config, on_ready)
     end)
@@ -47,7 +45,6 @@ function M.ensure_started(config, on_ready)
   
   connection.connect(addr, function(success, err)
     if success then
-      -- Connected successfully
       connection.write_json({ 
         action = "init", 
         payload = { 
@@ -57,27 +54,9 @@ function M.ensure_started(config, on_ready)
       })
       if on_ready then on_ready(true) end
     else
-      -- Connection failed, try to start daemon
       if M.start_daemon() then
-        -- Retry connection after short delay
-        uv.new_timer():start(200, 0, function()
-          connection.connect(addr, function(success2, err2)
-            if success2 then
-              connection.write_json({ 
-                action = "init", 
-                payload = { 
-                  client_id = config.client_id, 
-                  session_id = state.get_session_id() 
-                } 
-              })
-              if on_ready then on_ready(true) end
-            else
-              vim.schedule(function()
-                vim.notify("discord.nvim: failed to connect to daemon: " .. (err2 or "unknown error"), vim.log.levels.ERROR)
-              end)
-              if on_ready then on_ready(false, err2) end
-            end
-          end)
+        uv.new_timer():start(1000, 0, function()
+          M.retry_connection_with_backoff(addr, config, on_ready, 0)
         end)
       else
         vim.schedule(function()
@@ -89,10 +68,47 @@ function M.ensure_started(config, on_ready)
   end)
 end
 
+function M.retry_connection_with_backoff(addr, config, on_ready, attempt)
+  local max_attempts = 5
+  local delays = { 500, 1000, 2000, 3000, 5000 }
+  
+  if attempt >= max_attempts then
+    vim.schedule(function()
+      vim.notify("discord.nvim: failed to connect to daemon after " .. max_attempts .. " attempts", vim.log.levels.ERROR)
+    end)
+    if on_ready then on_ready(false, "Connection timeout") end
+    return
+  end
+  
+  connection.connect(addr, function(success, err)
+    if success then
+      connection.write_json({ 
+        action = "init", 
+        payload = { 
+          client_id = config.client_id, 
+          session_id = state.get_session_id() 
+        } 
+      })
+      if on_ready then on_ready(true) end
+    else
+      local delay = delays[attempt + 1] or delays[#delays]
+      uv.new_timer():start(delay, 0, function()
+        M.retry_connection_with_backoff(addr, config, on_ready, attempt + 1)
+      end)
+    end
+  end)
+end
+
 function M.shutdown()
-  -- Just close the connection - the daemon will auto-shutdown when no clients remain
   connection.close()
-  -- Don't kill the daemon process - let it handle its own lifecycle
+
+  if proc then
+    proc:kill("TERM")
+    proc = nil
+  end
+  
+  local addr = "/tmp/presenced.sock"
+  uv.fs_unlink(addr, function() end) 
 end
 
 return M
