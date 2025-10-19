@@ -42,8 +42,6 @@ func (h *Handler) Handle(msg protocol.InboundMessage) protocol.BasicResponse {
 			return protocol.BasicResponse{Ok: false, Error: err.Error()}
 		}
 		return protocol.BasicResponse{Ok: true}
-	case "shutdown":
-		return protocol.BasicResponse{Ok: true}
 	default:
 		return protocol.BasicResponse{Ok: false, Error: "unknown action"}
 	}

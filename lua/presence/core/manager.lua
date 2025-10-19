@@ -91,9 +91,9 @@ function M.ensure_started(config, on_ready)
 end
 
 function M.shutdown()
-  connection.write_json({ action = "shutdown", payload = {} })
+  -- Just close the connection - the daemon will auto-shutdown when no clients remain
   connection.close()
-  M.stop_daemon()
+  -- Don't kill the daemon process - let it handle its own lifecycle
 end
 
 return M

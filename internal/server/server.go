@@ -5,6 +5,7 @@ import (
 	"net"
 	"os"
 	"sync"
+	"sync/atomic"
 
 	"github.com/himonshuuu/presence.nvim/daemon/internal/config"
 	"github.com/himonshuuu/presence.nvim/daemon/internal/handler"
@@ -14,12 +15,13 @@ import (
 )
 
 type Server struct {
-	addr    string
-	ln      net.Listener
-	wg      sync.WaitGroup
-	handler *handler.Handler
-	logger  *logger.Logger
-	closed  chan struct{}
+	addr          string
+	ln            net.Listener
+	wg            sync.WaitGroup
+	handler       *handler.Handler
+	logger        *logger.Logger
+	closed        chan struct{}
+	activeClients int32
 }
 
 func New(client presence.Service) *Server {
@@ -67,7 +69,29 @@ func (s *Server) handleConn(c net.Conn) {
 	defer s.wg.Done()
 	defer c.Close()
 
-	s.logger.Debug("New client connected from %s", c.RemoteAddr())
+	// Increment active client count
+	atomic.AddInt32(&s.activeClients, 1)
+	s.logger.Debug("New client connected from %s (total clients: %d)", c.RemoteAddr(), atomic.LoadInt32(&s.activeClients))
+
+	// Decrement active client count when connection closes
+	defer func() {
+		count := atomic.AddInt32(&s.activeClients, -1)
+		s.logger.Debug("Client disconnected (remaining clients: %d)", count)
+
+		// If no clients remain, initiate graceful shutdown
+		if count == 0 {
+			s.logger.Info("No active clients remaining, initiating shutdown")
+			go func() {
+				select {
+				case <-s.closed:
+					// Already shutting down
+				default:
+					close(s.closed)
+				}
+			}()
+		}
+	}()
+
 	codec := protocol.NewCodec(c, c)
 
 	for {
@@ -86,16 +110,22 @@ func (s *Server) handleConn(c net.Conn) {
 		resp := s.handler.Handle(msg)
 		_ = codec.WriteJSON(resp)
 
-		if msg.Action == "shutdown" {
-			s.logger.Info("Shutdown requested by client")
-			return
-		}
+		// Remove the shutdown action - clients should just disconnect
+		// The daemon will auto-shutdown when no clients remain
 	}
 }
 
 func (s *Server) Close() error {
 	s.logger.Info("Shutting down server...")
-	close(s.closed)
+
+	// Only close the channel if it's not already closed
+	select {
+	case <-s.closed:
+		// Already closed
+	default:
+		close(s.closed)
+	}
+
 	if s.ln != nil {
 		_ = s.ln.Close()
 	}
