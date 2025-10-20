@@ -18,27 +18,27 @@ jobs:
             arch: amd64
             ext: ""
             runner: ubuntu-latest
-            artifact: presenced-linux-amd64
+            artifact: discord-nvim-daemon-linux-amd64
           - os: linux
             arch: arm64
             ext: ""
             runner: ubuntu-latest
-            artifact: presenced-linux-arm64
+            artifact: discord-nvim-daemon-linux-arm64
           - os: darwin
             arch: amd64
             ext: ""
             runner: macos-latest
-            artifact: presenced-darwin-amd64
+            artifact: discord-nvim-daemon-darwin-amd64
           - os: darwin
             arch: arm64
             ext: ""
             runner: macos-latest
-            artifact: presenced-darwin-arm64
+            artifact: discord-nvim-daemon-darwin-arm64
           - os: 
             arch: amd64
             ext: ".exe"
             runner: windows-latest
-            artifact: presenced-windows-amd64.exe
+            artifact: discord-nvim-daemon-windows-amd64.exe
 
     steps:
       - name: Checkout
@@ -53,7 +53,7 @@ jobs:
         if: runner.os != 'Windows'
         run: |
           mkdir -p bin
-          GOOS=${{ matrix.os }} GOARCH=${{ matrix.arch }} CGO_ENABLED=0 go build -ldflags="-s -w" -o bin/${{ matrix.artifact }} ./cmd/presenced
+          GOOS=${{ matrix.os }} GOARCH=${{ matrix.arch }} CGO_ENABLED=0 go build -ldflags="-s -w" -o bin/${{ matrix.artifact }} ./cmd/discord-nvim-daemon
 
       - name: Build binary (Windows)
         if: runner.os == 'Windows'
@@ -63,7 +63,7 @@ jobs:
           $env:GOOS="${{ matrix.os }}"
           $env:GOARCH="${{ matrix.arch }}"
           $env:CGO_ENABLED="0"
-          go build -ldflags="-s -w" -o "bin\${{ matrix.artifact }}" ./cmd/presenced
+          go build -ldflags="-s -w" -o "bin\${{ matrix.artifact }}" ./cmd/discord-nvim-daemon
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4

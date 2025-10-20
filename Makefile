@@ -1,38 +1,39 @@
-BIN_DIR=bin
-BIN=$(BIN_DIR)/presenced
-PKG=./cmd/presenced
+BIN_DIR := bin
+BIN := $(BIN_DIR)/discord-nvim-daemon
+PKG := ./cmd/daemon
 
-# Cross-compilation targets
 PLATFORMS := linux/amd64 linux/arm64 darwin/amd64 darwin/arm64 windows/amd64
 
-.PHONY: all build build-all install fmt tidy clean release
+.PHONY: all build build-all install fmt tidy clean release deps
 
 all: build
 
 deps:
-	go get ./...
+	go mod download
 
-build:
-	mkdir -p $(BIN_DIR)
+build: deps
+	@mkdir -p $(BIN_DIR)
 	CGO_ENABLED=0 go build -ldflags="-s -w" -o $(BIN) $(PKG)
 
-install:
+install: deps
 	go install $(PKG)
 
 fmt:
 	go fmt ./...
 
-tidy: 
+tidy:
 	go mod tidy
 
-build-all:
+build-all: deps
+	@mkdir -p $(BIN_DIR)
 	@for platform in $(PLATFORMS); do \
 		OS=$$(echo $$platform | cut -d'/' -f1); \
 		ARCH=$$(echo $$platform | cut -d'/' -f2); \
 		EXT=""; \
-		if [ $$OS = "windows" ]; then EXT=".exe"; fi; \
-		echo "Building $$OS/$$ARCH..."; \
-		CGO_ENABLED=0 GOOS=$$OS GOARCH=$$ARCH go build -ldflags="-s -w" -o $(BIN_DIR)/presenced-$$OS-$$ARCH$$EXT $(PKG); \
+		if [ "$$OS" = "windows" ]; then EXT=".exe"; fi; \
+		OUT=$(BIN_DIR)/discord-nvim-daemon-$$OS-$$ARCH$$EXT; \
+		echo "Building $$OUT..."; \
+		CGO_ENABLED=0 GOOS=$$OS GOARCH=$$ARCH go build -ldflags="-s -w" -o $$OUT $(PKG); \
 	done
 
 release: build-all
