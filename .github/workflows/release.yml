@@ -53,7 +53,7 @@ jobs:
         if: runner.os != 'Windows'
         run: |
           mkdir -p bin
-          GOOS=${{ matrix.os }} GOARCH=${{ matrix.arch }} CGO_ENABLED=0 go build -ldflags="-s -w" -o bin/${{ matrix.artifact }} ./cmd/discord-nvim-daemon
+          GOOS=${{ matrix.os }} GOARCH=${{ matrix.arch }} CGO_ENABLED=0 go build -ldflags="-s -w" -o bin/${{ matrix.artifact }} ./cmd/daemon
 
       - name: Build binary (Windows)
         if: runner.os == 'Windows'
@@ -63,7 +63,7 @@ jobs:
           $env:GOOS="${{ matrix.os }}"
           $env:GOARCH="${{ matrix.arch }}"
           $env:CGO_ENABLED="0"
-          go build -ldflags="-s -w" -o "bin\${{ matrix.artifact }}" ./cmd/discord-nvim-daemon
+          go build -ldflags="-s -w" -o "bin\${{ matrix.artifact }}" ./cmd/daemon
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
