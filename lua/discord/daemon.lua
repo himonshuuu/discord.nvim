@@ -32,7 +32,7 @@ local function download_binary()
   
   local logger = require("lib.logger")
   logger.debug("Downloading binary...")
-  uv.spawn("curl", { args = {"-L", "-o", bin, url} }, function(code)
+  uv.spawn("curl", { args = {"-fsSL", "-o", bin, url} }, function(code)
     if code == 0 then
       uv.fs_chmod(bin, tonumber("755", 8), function() end)
       vim.schedule(function()
