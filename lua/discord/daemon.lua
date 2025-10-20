@@ -28,11 +28,14 @@ end
 local function download_binary()
   local bin = get_binary()
   local url = "https://github.com/himonshuuu/discord.nvim/releases/latest/download/" .. vim.fn.fnamemodify(bin, ":t")
-  vim.fn.mkdir(vim.fn.fnamemodify(bin, ":h"), "p")
-  
+
   local logger = require("lib.logger")
+   
+  logger.debug(url)
+  vim.fn.mkdir(vim.fn.fnamemodify(bin, ":h"), "p")
+
   logger.debug("Downloading binary...")
-  uv.spawn("curl", { args = {"-fsSL", "-o", bin, url} }, function(code)
+  uv.spawn("curl", { args = {"-fsSL", url, "-o", bin } }, function(code)
     if code == 0 then
       uv.fs_chmod(bin, tonumber("755", 8), function() end)
       vim.schedule(function()
@@ -41,6 +44,7 @@ local function download_binary()
     end
   end)
 end
+
 
 local function spawn_daemon()
   local bin = get_binary()

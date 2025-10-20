@@ -12,7 +12,7 @@ local default_config = {
   idle_timeout_ms = 5000,
   show_timer = true,
   debounce_timeout_ms = 500,
-  log_level = "info", -- "debug", "info", "warn", "error"
+  log_level = "debug", -- "debug", "info", "warn", "error"
   
   -- Customizable symbols for different states
   symbols = {
